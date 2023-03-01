@@ -14,9 +14,8 @@ export class ProductsService {
     return this.productRepo.find();
   }
 
-  findOne(id: any) {
-    const product = this.productRepo.findOne({ where: {id}});
-    console.log('culooo', product);
+  async findOne(id: any) {
+    const product = await this.productRepo.findOne({ where: {id}});
     
     if (!product) {
       throw new NotFoundException(`Product #${id} not found`);
@@ -24,33 +23,24 @@ export class ProductsService {
     return product;
   }
 
-  // create(payload: CreateProductDto) {
-  //   console.log(payload);
-  //   this.counterId = this.counterId + 1;
-  //   const newProduct = {
-  //     id: this.counterId,
-  //     ...payload,
-  //   };
-  //   this.products.push(newProduct);
-  //   return newProduct;
-  // }
+  create(data: CreateProductDto) {
+    // const newProduct = new Product();
+    // newProduct.image = data.image;
+    // newProduct.name = data.name;
+    // newProduct.description = data.description;
+    // newProduct.price = data.price;
+    // newProduct.stock = data.stock;
+    const newProduct = this.productRepo.create(data);
+    return this.productRepo.save(newProduct);
+  }
 
-  // update(id: number, payload: UpdateProductDto) {
-  //   const product = this.findOne(id);
-  //   const index = this.products.findIndex((item) => item.id === id);
-  //   this.products[index] = {
-  //     ...product,
-  //     ...payload,
-  //   };
-  //   return this.products[index];
-  // }
+  async update(id: any, changes: UpdateProductDto) {
+    const product = await this.productRepo.findOneBy(id);
+    this.productRepo.merge(product, changes)
+    return this.productRepo.save(product);
+  }
 
-  // remove(id: number) {
-  //   const index = this.products.findIndex((item) => item.id === id);
-  //   if (index === -1) {
-  //     throw new NotFoundException(`Product #${id} not found`);
-  //   }
-  //   this.products.splice(index, 1);
-  //   return true;
-  // }
+  remove(id: number) {
+    return this.productRepo.delete(id);
+  }
 }
